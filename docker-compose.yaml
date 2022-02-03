@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: iconophilos_db
+    networks:
+      - backend
+  app:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080 # If you change this, you must also update binding above and the exposed port in the Dockerfile
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: iconophilos_db
+      DB_PORT: 5432
+    depends_on:
+      - db
+    command: sh -c "/wait && ./iconophilos"
+    networks:
+      - backend
+
+networks:
+  backend:
